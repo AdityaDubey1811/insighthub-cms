@@ -26,7 +26,7 @@ public class PostController {
     public List<PostResponse> getAllPosts(){
         return postService.getAllPosts();
     }
-    @GetMapping("/{slug")
+    @GetMapping("/{slug}")
     public PostResponse getPostBySlug(@PathVariable String slug){
         return postService.getPostBySlug(slug);
     }

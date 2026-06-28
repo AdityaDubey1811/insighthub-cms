@@ -1,0 +1,8 @@
+package com.insighthub.cms.dto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+@Data
+@AllArgsConstructor
+public class ImageUploadResponse {
+    private String imageUrl;
+}

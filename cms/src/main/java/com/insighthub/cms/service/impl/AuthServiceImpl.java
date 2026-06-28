@@ -31,13 +31,13 @@ public class AuthServiceImpl implements AuthService{
     }
     @Override
     public AuthResponse register(RegisterRequest request){
-        Role readerRole = roleRepository.findByName("READER")
-                .orElseThrow(() -> new RuntimeException("READER role not found"));
+        Role authorRole = roleRepository.findByName("AUTHOR")
+                .orElseThrow(() -> new RuntimeException("Author role not found"));
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRoles(Set.of(readerRole));
+        user.setRoles(Set.of(authorRole));
         userRepository.save(user);
         String accessToken = jwtUtil.generateToken(user.getEmail());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getEmail());

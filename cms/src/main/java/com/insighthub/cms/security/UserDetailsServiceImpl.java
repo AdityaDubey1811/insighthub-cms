@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
                 user.getRoles()
                         .stream()
                         .map(role -> new
-                                SimpleGrantedAuthority(role.getName()))
+                                SimpleGrantedAuthority("ROLE_" + role.getName()))
                         .collect(Collectors.toList())
         );
     }
