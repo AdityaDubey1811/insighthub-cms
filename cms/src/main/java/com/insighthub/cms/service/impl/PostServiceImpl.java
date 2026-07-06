@@ -10,13 +10,16 @@ import com.insighthub.cms.service.PostService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.insighthub.cms.mapper.PostMapper;
 @Service
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    public PostServiceImpl(PostRepository postRepository,UserRepository userRepository){
+    private final PostMapper postMapper;
+    public PostServiceImpl(PostRepository postRepository,UserRepository userRepository,PostMapper postMapper){
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.postMapper = postMapper;
     }
     @Override
     public PostResponse createPost(PostRequest request,String authorEmail){
@@ -26,12 +29,12 @@ public class PostServiceImpl implements PostService{
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setSlug(generateSlug(request.getTitle()));
-        post.setStatus(PostStatus.DRAFT);
+        post.setStatus(PostStatus.PENDING);
         post.setAuthor(author);
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
         Post savedPost = postRepository.save(post);
-        return mapToResponse(savedPost);
+        return postMapper.mapToResponse(savedPost);
     }
     private String generateSlug(String title){
         String baseSlug = title.toLowerCase()
@@ -45,29 +48,18 @@ public class PostServiceImpl implements PostService{
         }
         return slug;
     }
-    private PostResponse mapToResponse(Post post){
-        PostResponse response = new PostResponse();
-        response.setId(post.getId());
-        response.setTitle(post.getTitle());
-        response.setContent(post.getContent());
-        response.setSlug(post.getSlug());
-        response.setStatus(post.getStatus().name());
-        response.setAuthorName(post.getAuthor().getName());
-        response.setCreatedAt(post.getCreatedAt());
-        return response;
-    }
     @Override
     public List<PostResponse> getAllPosts(){
         return postRepository.findAll()
                 .stream()
-                .map(this::mapToResponse)
+                .map(postMapper::mapToResponse)
                 .toList();
     }
     @Override
     public PostResponse getPostBySlug(String slug){
         Post post = postRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        return mapToResponse(post);
+        return postMapper.mapToResponse(post);
     }
     @Override
     public PostResponse updatePost(Long postId,PostRequest request,String userEmail){
@@ -80,7 +72,7 @@ public class PostServiceImpl implements PostService{
         post.setContent(request.getContent());
         post.setUpdatedAt(LocalDateTime.now());
         Post updated = postRepository.save(post);
-        return mapToResponse(updated);
+        return postMapper.mapToResponse(updated);
     }
     @Override
     public void deletePost(Long postId,String userEmail){
