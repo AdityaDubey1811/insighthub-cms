@@ -11,15 +11,22 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.insighthub.cms.mapper.PostMapper;
+import com.insighthub.cms.entity.PostVersion;
+import com.insighthub.cms.repository.PostVersionRepository;
 @Service
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
-    public PostServiceImpl(PostRepository postRepository,UserRepository userRepository,PostMapper postMapper){
+    private final PostVersionRepository postVersionRepository;
+    public PostServiceImpl(PostRepository postRepository,
+                           UserRepository userRepository,
+                           PostMapper postMapper,
+                           PostVersionRepository postVersionRepository){
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.postMapper = postMapper;
+        this.postVersionRepository = postVersionRepository;
     }
     @Override
     public PostResponse createPost(PostRequest request,String authorEmail){
@@ -68,6 +75,11 @@ public class PostServiceImpl implements PostService{
         if(!post.getAuthor().getEmail().equals(userEmail)){
             throw new RuntimeException("Not allowed");
         }
+        PostVersion version = new PostVersion();
+        version.setPost(post);
+        version.setContent(post.getContent());
+        version.setEditedAt(LocalDateTime.now());
+        postVersionRepository.save(version);
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setUpdatedAt(LocalDateTime.now());
