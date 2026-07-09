@@ -66,6 +66,8 @@ public class PostServiceImpl implements PostService{
     public PostResponse getPostBySlug(String slug){
         Post post = postRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+        post.setViews(post.getViews() + 1);
+        postRepository.save(post);
         return postMapper.mapToResponse(post);
     }
     @Override
