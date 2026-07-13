@@ -2,6 +2,7 @@ package com.insighthub.cms.service.impl;
 import com.insighthub.cms.dto.CommentRequest;
 import com.insighthub.cms.dto.CommentResponse;
 import com.insighthub.cms.entity.Comment;
+import com.insighthub.cms.entity.NotificationType;
 import com.insighthub.cms.entity.Post;
 import com.insighthub.cms.entity.User;
 import com.insighthub.cms.repository.CommentRepository;
@@ -11,17 +12,21 @@ import com.insighthub.cms.service.CommentService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.insighthub.cms.service.NotificationService;
 @Service
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
     public CommentServiceImpl(CommentRepository commentRepository,
                               PostRepository postRepository,
-                              UserRepository userRepository){
+                              UserRepository userRepository,
+                              NotificationService notificationService){
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
     @Override
     public CommentResponse addComment(Long postId,
@@ -41,7 +46,25 @@ public class CommentServiceImpl implements CommentService {
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
             comment.setParent(parent);
         }
-        return mapToResponse(commentRepository.save(comment));
+        Comment savedComment = commentRepository.save(comment);
+        if(request.getParentId() == null){
+            if (post.getAuthor().getId() != user.getId()) {
+                notificationService.sendNotification(
+                        post.getAuthor().getId(),
+                        NotificationType.COMMENT,
+                        user.getName() + " commented on your post"
+                );
+            }
+        }else{
+            if (comment.getParent().getUser().getId() != user.getId()) {
+                notificationService.sendNotification(
+                        comment.getParent().getUser().getId(),
+                        NotificationType.REPLY,
+                        user.getName() + " replied to your comment"
+                );
+            }
+        }
+        return mapToResponse(savedComment);
     }
     @Override
     public List<CommentResponse> getComments(Long postId){

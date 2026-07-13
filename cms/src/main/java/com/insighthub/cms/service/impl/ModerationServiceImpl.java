@@ -1,10 +1,12 @@
 package com.insighthub.cms.service.impl;
 import com.insighthub.cms.dto.PostModerationRequest;
 import com.insighthub.cms.dto.PostResponse;
+import com.insighthub.cms.entity.NotificationType;
 import com.insighthub.cms.entity.Post;
 import com.insighthub.cms.entity.PostStatus;
 import com.insighthub.cms.repository.PostRepository;
 import com.insighthub.cms.service.ModerationService;
+import com.insighthub.cms.service.NotificationService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.insighthub.cms.mapper.PostMapper;
@@ -12,9 +14,11 @@ import com.insighthub.cms.mapper.PostMapper;
 public class ModerationServiceImpl implements ModerationService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
-    public ModerationServiceImpl(PostRepository postRepository,PostMapper postMapper){
+    private final NotificationService notificationService;
+    public ModerationServiceImpl(PostRepository postRepository,PostMapper postMapper,NotificationService notificationService){
         this.postRepository = postRepository;
         this.postMapper = postMapper;
+        this.notificationService = notificationService;
     }
     @Override
     public List<PostResponse> getPendingPosts(){
@@ -30,6 +34,13 @@ public class ModerationServiceImpl implements ModerationService {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         post.setStatus(PostStatus.valueOf(request.getStatus()));
         Post updated = postRepository.save(post);
+        if(post.getStatus() ==  PostStatus.APPROVED){
+            notificationService.sendNotification(
+                    post.getAuthor().getId(),
+                    NotificationType.APPROVAL,
+                    "Your post has been approved"
+            );
+        }
         return postMapper.mapToResponse(updated);
     }
 }
