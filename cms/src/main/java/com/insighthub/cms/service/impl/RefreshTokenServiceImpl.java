@@ -7,6 +7,7 @@ import com.insighthub.cms.service.RefreshTokenService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.insighthub.cms.exception.ResourceNotFoundException;
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService{
       private final RefreshTokenRepository refreshTokenRepository;
@@ -20,7 +21,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
       @Override
       public RefreshToken createRefreshToken(String email){
           User user = userRepository.findByEmail(email)
-                  .orElseThrow(() -> new RuntimeException("User not found"));
+                  .orElseThrow(() -> new ResourceNotFoundException("User not found"));
           RefreshToken token = new RefreshToken();
           token.setUser(user);
           token.setToken(UUID.randomUUID().toString());

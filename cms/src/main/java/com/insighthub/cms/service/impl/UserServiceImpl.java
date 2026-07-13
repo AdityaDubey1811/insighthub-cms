@@ -2,11 +2,13 @@ package com.insighthub.cms.service.impl;
 import com.insighthub.cms.dto.UserProfileResponse;
 import com.insighthub.cms.entity.Follower;
 import com.insighthub.cms.entity.User;
+import com.insighthub.cms.exception.ResourceNotFoundException;
 import com.insighthub.cms.repository.FollowerRepository;
 import com.insighthub.cms.repository.UserRepository;
 import com.insighthub.cms.service.UserService;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import com.insighthub.cms.exception.BadRequestException;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -19,11 +21,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void toggleFollow(Long userId,String currentUserEmail){
         User currentUser = userRepository.findByEmail(currentUserEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         User targetUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Target user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Target user not found"));
         if(currentUser.getId() == targetUser.getId()){
-            throw new RuntimeException("You cannot follow yourself");
+            throw new BadRequestException("You cannot follow yourself");
         }
         Optional<Follower> existing = followerRepository
                 .findByFollowerIdAndFollowingId(currentUser.getId(), targetUser.getId());
@@ -39,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserProfileResponse getProfile(Long userId){
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         UserProfileResponse response = new UserProfileResponse();
         response.setId(user.getId());
         response.setName(user.getName());

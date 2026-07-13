@@ -8,6 +8,7 @@ import com.insighthub.cms.service.VersionService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.insighthub.cms.exception.ResourceNotFoundException;
 @Service
 public class VersionServiceImpl implements VersionService{
     private final PostRepository postRepository;
@@ -26,7 +27,7 @@ public class VersionServiceImpl implements VersionService{
     @Override
     public void restoreVersion(Long versionId){
         PostVersion version = postVersionRepository.findById(versionId)
-                .orElseThrow(() -> new RuntimeException("Version not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Version not found"));
         Post post = version.getPost();
         PostVersion backup = new PostVersion();
         backup.setPost(post);

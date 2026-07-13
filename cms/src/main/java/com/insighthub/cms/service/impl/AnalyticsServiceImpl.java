@@ -8,6 +8,7 @@ import com.insighthub.cms.service.AnalyticsService;
 import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
+import com.insighthub.cms.exception.ResourceNotFoundException;
 @Service
 public class AnalyticsServiceImpl implements AnalyticsService {
     private final PostRepository postRepository;
@@ -23,7 +24,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @Override
     public AnalyticsResponse getPostAnalytics(Long postId){
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         AnalyticsResponse response = new AnalyticsResponse();
         response.setPostId(post.getId());
         response.setTitle(post.getTitle());

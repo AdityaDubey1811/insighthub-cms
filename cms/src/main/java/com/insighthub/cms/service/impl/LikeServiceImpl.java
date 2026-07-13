@@ -8,6 +8,7 @@ import com.insighthub.cms.repository.UserRepository;
 import com.insighthub.cms.service.LikeService;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import com.insighthub.cms.exception.ResourceNotFoundException;
 @Service
 public class LikeServiceImpl implements LikeService {
     private final PostLikeRepository postLikeRepository;
@@ -23,9 +24,9 @@ public class LikeServiceImpl implements LikeService {
     @Override
     public void toggleLike(Long postId,String userEmail){
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Optional<PostLike> existingLike =
                 postLikeRepository.findByPostIdAndUserId(postId, user.getId());
         if(existingLike.isPresent()){

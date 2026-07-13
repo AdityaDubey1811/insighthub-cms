@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.insighthub.cms.service.NotificationService;
+import com.insighthub.cms.exception.ResourceNotFoundException;
 @Service
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
@@ -33,9 +34,9 @@ public class CommentServiceImpl implements CommentService {
                                       CommentRequest request,
                                       String userEmail){
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Comment comment = new Comment();
         comment.setContent(request.getContent());
         comment.setPost(post);
@@ -43,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setCreatedAt(LocalDateTime.now());
         if(request.getParentId() != null){
             Comment parent = commentRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Parent comment not found"));
             comment.setParent(parent);
         }
         Comment savedComment = commentRepository.save(comment);

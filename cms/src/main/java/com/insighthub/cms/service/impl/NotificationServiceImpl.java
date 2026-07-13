@@ -10,6 +10,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.insighthub.cms.exception.ResourceNotFoundException;
+import com.insighthub.cms.exception.ForbiddenException;
 @Service
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
@@ -25,7 +27,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendNotification(Long userId,NotificationType type,String message){
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Notification notification = new Notification();
         notification.setUser(user);
         notification.setType(type);
@@ -43,7 +45,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationResponse> getMyNotifications(String userEmail){
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
                 .stream()
                 .map(this::mapToResponse)
@@ -52,11 +54,11 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void markAsRead(Long notificationId,String userEmail){
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
         if(notification.getUser().getId() !=  user.getId()){
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
         notification.setRead(true);
         notificationRepository.save(notification);

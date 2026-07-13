@@ -13,6 +13,8 @@ import java.util.List;
 import com.insighthub.cms.mapper.PostMapper;
 import com.insighthub.cms.entity.PostVersion;
 import com.insighthub.cms.repository.PostVersionRepository;
+import com.insighthub.cms.exception.ResourceNotFoundException;
+import com.insighthub.cms.exception.ForbiddenException;
 @Service
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
@@ -31,7 +33,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostResponse createPost(PostRequest request,String authorEmail){
         User author = userRepository.findByEmail(authorEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Post post = new Post();
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
@@ -65,7 +67,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostResponse getPostBySlug(String slug){
         Post post = postRepository.findBySlug(slug)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         post.setViews(post.getViews() + 1);
         postRepository.save(post);
         return postMapper.mapToResponse(post);
@@ -73,9 +75,9 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostResponse updatePost(Long postId,PostRequest request,String userEmail){
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         if(!post.getAuthor().getEmail().equals(userEmail)){
-            throw new RuntimeException("Not allowed");
+            throw new ForbiddenException("You are not allowed to perform this action");
         }
         PostVersion version = new PostVersion();
         version.setPost(post);
@@ -91,9 +93,9 @@ public class PostServiceImpl implements PostService{
     @Override
     public void deletePost(Long postId,String userEmail){
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         if(!post.getAuthor().getEmail().equals(userEmail)){
-            throw new RuntimeException("Not allowed");
+            throw new ForbiddenException("You are not allowed to perform this action");
         }
         postRepository.delete(post);
     }

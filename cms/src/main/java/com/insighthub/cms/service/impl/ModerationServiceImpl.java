@@ -10,6 +10,7 @@ import com.insighthub.cms.service.NotificationService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.insighthub.cms.mapper.PostMapper;
+import com.insighthub.cms.exception.ResourceNotFoundException;
 @Service
 public class ModerationServiceImpl implements ModerationService {
     private final PostRepository postRepository;
@@ -31,7 +32,7 @@ public class ModerationServiceImpl implements ModerationService {
     public PostResponse moderatePost(Long postId,
                                      PostModerationRequest request){
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         post.setStatus(PostStatus.valueOf(request.getStatus()));
         Post updated = postRepository.save(post);
         if(post.getStatus() ==  PostStatus.APPROVED){
