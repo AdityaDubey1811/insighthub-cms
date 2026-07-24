@@ -13,7 +13,7 @@ public class AuthController {
     public AuthResponse register(@RequestBody RegisterRequest request){
         return authService.register(request);
     }
-    @PostMapping("login")
+    @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest request){
         return authService.login(request);
     }
