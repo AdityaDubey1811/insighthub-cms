@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { login } from "../../services/authService";
 import { setTokens } from "../../utils/tokenStorage";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
   const {
@@ -9,15 +11,19 @@ export default function Login() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
+  const navigate = useNavigate();
+  const { setIsAuthenticated } = useAuth();
 
   const onSubmit = async (data) => {
     try {
       const response = await login(data);
       setTokens(response.accessToken, response.refreshToken);
 
-      console.log(response);
+      setIsAuthenticated(true);
 
       toast.success("Login successful");
+
+      navigate("/");
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Login failed"
