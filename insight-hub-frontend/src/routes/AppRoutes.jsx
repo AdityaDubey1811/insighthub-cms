@@ -4,6 +4,7 @@ import Login from "../pages/auth/Login";
 import Dashboard from "../pages/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
+import Posts from "../pages/Posts";
 
 export default function AppRoutes() {
   return (
@@ -28,6 +29,16 @@ export default function AppRoutes() {
             </PublicRoute>
           }
         />
+        <Route
+  path="/posts"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <Posts />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
       </Routes>
     </BrowserRouter>
   );
