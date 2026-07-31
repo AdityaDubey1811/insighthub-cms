@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAllPosts } from "../services/postService";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -32,13 +34,25 @@ export default function Posts() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">
-        Posts
-      </h1>
+      <div className="flex items-center justify-between">
+  <div>
+    <h1 className="text-2xl font-bold text-gray-900">
+      Posts
+    </h1>
 
-      <p className="mt-1 text-sm text-gray-600">
-        Manage all published and pending posts.
-      </p>
+    <p className="mt-1 text-sm text-gray-600">
+      Manage all published and pending posts.
+    </p>
+  </div>
+
+  <Link
+    to="/posts/create"
+    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+  >
+    <Plus size={18} />
+    Create Post
+  </Link>
+</div>
 
      <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
   {posts.length === 0 ? (

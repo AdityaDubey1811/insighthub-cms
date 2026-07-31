@@ -4,6 +4,7 @@ import com.insighthub.cms.service.AnalyticsService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/analytics")
 public class AnalyticsController {
@@ -19,6 +20,7 @@ public class AnalyticsController {
     public List<AnalyticsResponse> getTopPosts(){
         return analyticsService.getTopPosts();
     }
+    @PreAuthorize("hasAnyRole('AUTHOR', 'ADMIN')")
     @GetMapping("/my-posts")
     public List<AnalyticsResponse> getMyPostsAnalytics(Authentication authentication){
         return analyticsService.getAuthorPostsAnalytics(authentication.getName());

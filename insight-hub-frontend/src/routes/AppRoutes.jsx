@@ -5,6 +5,7 @@ import Dashboard from "../pages/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import Posts from "../pages/Posts";
+import CreatePost from "../pages/CreatePost";
 
 export default function AppRoutes() {
   return (
@@ -35,6 +36,16 @@ export default function AppRoutes() {
     <ProtectedRoute>
       <Layout>
         <Posts />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/posts/create"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <CreatePost />
       </Layout>
     </ProtectedRoute>
   }
