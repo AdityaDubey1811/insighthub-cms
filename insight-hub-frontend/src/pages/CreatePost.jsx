@@ -4,14 +4,61 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { createPost } from "../services/postService";
 import toast from "react-hot-toast";
+import { uploadImage } from "../services/imageService";
+import { useNavigate } from "react-router-dom";
 
 export default function CreatePost() {
   const [content, setContent] = useState("");
 
   const { quill, quillRef } = useQuill({
-    theme: "snow",
-    placeholder: "Write your post content...",
-  });
+  theme: "snow",
+  placeholder: "Write your post content...",
+
+  modules: {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "image"],
+      ["clean"],
+    ],
+  },
+});
+const handleImageUpload = () => {
+  const input = document.createElement("input");
+
+  input.setAttribute("type", "file");
+  input.setAttribute("accept", "image/*");
+  input.click();
+
+  input.onchange = async () => {
+    const file = input.files?.[0];
+
+    if (!file || !quill) return;
+
+    try {
+      toast.loading("Uploading image...", {
+        id: "image-upload",
+      });
+
+      const imageUrl = await uploadImage(file);
+      const range = quill.getSelection(true);
+
+      quill.insertEmbed(range.index, "image", imageUrl);
+      quill.setSelection(range.index + 1);
+
+      toast.success("Image uploaded", {
+        id: "image-upload",
+      });
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Image upload failed", {
+        id: "image-upload",
+      });
+    }
+  };
+};
 
   useEffect(() => {
     if (!quill) return;
@@ -21,6 +68,15 @@ export default function CreatePost() {
     });
   }, [quill]);
 
+  useEffect(() => {
+  if (!quill) return;
+
+  const toolbar = quill.getModule("toolbar");
+  toolbar.addHandler("image", handleImageUpload);
+}, [quill]);
+ 
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -29,10 +85,11 @@ export default function CreatePost() {
   } = useForm();
 
   const onSubmit = async (data) => {
+    
     try {
-      if (!quill || quill.getText().trim().length === 0) {
-        toast.error("Content is required");
-        return;
+      if (!quill || quill.root.innerHTML === "<p><br></p>") {
+      toast.error("Content is required");
+      return;
       }
 
       await createPost({
@@ -41,6 +98,7 @@ export default function CreatePost() {
       });
 
       toast.success("Post created successfully");
+      navigate("/posts");
 
       reset();
       quill.setContents([]);

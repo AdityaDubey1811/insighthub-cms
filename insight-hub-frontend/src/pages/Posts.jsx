@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getAllPosts } from "../services/postService";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
+import { Pencil } from "lucide-react";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -70,6 +71,7 @@ export default function Posts() {
             <th className="px-5 py-3 font-medium">Title</th>
             <th className="px-5 py-3 font-medium">Status</th>
             <th className="px-5 py-3 font-medium">Author</th>
+            <th className="px-5 py-3 font-medium">Actions</th>
           </tr>
         </thead>
 
@@ -87,6 +89,15 @@ export default function Posts() {
               <td className="px-5 py-4 text-sm text-gray-600">
                 {post.authorName}
               </td>
+              <td className="px-5 py-4">
+             <Link
+                  to={`/posts/${post.id}/edit`}
+             className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+             >
+             <Pencil size={16} />
+             Edit
+             </Link>
+             </td>
             </tr>
           ))}
         </tbody>
