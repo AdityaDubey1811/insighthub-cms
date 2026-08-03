@@ -91,7 +91,7 @@ export default function Posts() {
               </td>
               <td className="px-5 py-4">
              <Link
-                  to={`/posts/${post.id}/edit`}
+                  to={`/posts/${post.slug}/edit`}
              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
              >
              <Pencil size={16} />
