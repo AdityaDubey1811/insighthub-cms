@@ -7,6 +7,7 @@ import PublicRoute from "./PublicRoute";
 import Posts from "../pages/Posts";
 import CreatePost from "../pages/CreatePost";
 import EditPost from "../pages/EditPost";
+import PostDetails from "../pages/PostDetails";
 
 export default function AppRoutes() {
   return (
@@ -57,6 +58,16 @@ export default function AppRoutes() {
     <ProtectedRoute>
       <Layout>
         <EditPost />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/posts/view/:slug"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <PostDetails />
       </Layout>
     </ProtectedRoute>
   }

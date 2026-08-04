@@ -2,12 +2,38 @@ import { useEffect, useState } from "react";
 import { getAllPosts } from "../services/postService";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { deletePost } from "../services/postService";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const handleDelete = async (postId) => {
+   
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this post?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await deletePost(postId);
+
+    setPosts((currentPosts) =>
+      currentPosts.filter((post) => post.id !== postId)
+    );
+
+    toast.success("Post deleted successfully");
+  } catch (error) {
+    console.error(error);
+    toast.error(
+      error.response?.data?.message || "Unable to delete post"
+    );
+  }
+
+};
 
   useEffect(() => {
     async function fetchPosts() {
@@ -78,9 +104,14 @@ export default function Posts() {
         <tbody className="divide-y divide-gray-200">
           {posts.map((post) => (
             <tr key={post.id}>
-              <td className="px-5 py-4 text-sm font-medium text-gray-900">
-                {post.title}
-              </td>
+              <td className="px-5 py-4 text-sm">
+           <Link
+            to={`/posts/view/${post.slug}`}
+               className="font-medium text-gray-900 hover:text-blue-600"
+           >
+           {post.title}
+          </Link>
+           </td>
 
               <td className="px-5 py-4 text-sm text-gray-600">
                 {post.status}
@@ -89,15 +120,28 @@ export default function Posts() {
               <td className="px-5 py-4 text-sm text-gray-600">
                 {post.authorName}
               </td>
-              <td className="px-5 py-4">
-             <Link
-                  to={`/posts/${post.slug}/edit`}
-             className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+             <td className="px-5 py-4">
+              <div className="flex items-center gap-2">
+
+              <Link
+                to={`/posts/${post.slug}/edit`}
+                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+              <Pencil size={16} />
+               Edit
+               </Link>
+
+             <button
+             type="button"
+             onClick={() => handleDelete(post.id)}
+              className="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
              >
-             <Pencil size={16} />
-             Edit
-             </Link>
-             </td>
+             <Trash2 size={16} />
+             Delete
+            </button>
+
+            </div>
+          </td>
             </tr>
           ))}
         </tbody>
