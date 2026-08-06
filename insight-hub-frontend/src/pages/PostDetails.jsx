@@ -7,6 +7,10 @@ import {
   getLikeCount,
   toggleLike,
 } from "../services/likeService";
+import { getComments } from "../services/commentService";
+import CommentItem from "../components/comment/CommentItem";
+import { useForm } from "react-hook-form";
+import { addComment } from "../services/commentService";
 
 export default function PostDetails() {
   const { slug } = useParams();
@@ -16,6 +20,14 @@ export default function PostDetails() {
   const [error, setError] = useState("");
   const [likeCount, setLikeCount] = useState(0);
   const [likeLoading, setLikeLoading] = useState(false);
+  const [comments, setComments] = useState([]);
+const [commentsLoading, setCommentsLoading] = useState(true);
+const {
+  register,
+  handleSubmit,
+  reset,
+  formState: { errors, isSubmitting },
+} = useForm();
 
   useEffect(() => {
     async function fetchPost() {
@@ -24,6 +36,9 @@ export default function PostDetails() {
         setPost(data);
         const count = await getLikeCount(data.id);
         setLikeCount(count);
+        const commentsData = await getComments(data.id);
+        setComments(commentsData);
+        setCommentsLoading(false);
       } catch (err) {
         console.error(err);
         setError("Unable to load post.");
@@ -52,6 +67,47 @@ export default function PostDetails() {
     );
   } finally {
     setLikeLoading(false);
+  }
+};
+const handleCommentSubmit = async (data) => {
+  if (!post) return;
+
+  try {
+    await addComment(post.id, {
+      content: data.content,
+      parentId: null,
+    });
+
+    const updatedComments = await getComments(post.id);
+    setComments(updatedComments);
+
+    reset();
+    toast.success("Comment added");
+  } catch (error) {
+    console.error(error);
+
+    toast.error(
+      error.response?.data?.message || "Unable to add comment"
+    );
+  }
+};
+const handleReply = async (parentId, content) => {
+  try {
+    await addComment(post.id, {
+      content,
+      parentId,
+    });
+
+    const updatedComments = await getComments(post.id);
+    setComments(updatedComments);
+
+    toast.success("Reply added");
+  } catch (error) {
+    console.error(error);
+
+    toast.error(
+      error.response?.data?.message || "Unable to add reply"
+    );
   }
 };
 
@@ -88,6 +144,60 @@ export default function PostDetails() {
         className="prose mt-8 max-w-none"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
+      <section className="mt-10 border-t border-gray-200 pt-8">
+  <h2 className="text-xl font-semibold text-gray-900">
+    Comments
+  </h2>
+  <form
+  onSubmit={handleSubmit(handleCommentSubmit)}
+  className="mt-5 rounded-xl border border-gray-200 bg-white p-4"
+>
+  <textarea
+    {...register("content", {
+      required: "Comment is required",
+    })}
+    rows={3}
+    placeholder="Write a comment..."
+    className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+  />
+
+  {errors.content && (
+    <p className="mt-1 text-sm text-red-600">
+      {errors.content.message}
+    </p>
+  )}
+
+  <div className="mt-3 flex justify-end">
+    <button
+      type="submit"
+      disabled={isSubmitting}
+      className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {isSubmitting ? "Posting..." : "Post Comment"}
+    </button>
+  </div>
+</form>
+
+  {commentsLoading ? (
+    <p className="mt-4 text-sm text-gray-500">
+      Loading comments...
+    </p>
+  ) : comments.length === 0 ? (
+    <p className="mt-4 text-sm text-gray-500">
+      No comments yet.
+    </p>
+  ) : (
+    <div className="mt-5 space-y-4">
+     {comments.map((comment) => (
+  <CommentItem
+    key={comment.id}
+    comment={comment}
+    onReply={handleReply}
+  />
+))}
+    </div>
+  )}
+</section>
     </article>
   );
 }
