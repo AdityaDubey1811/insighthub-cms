@@ -8,6 +8,7 @@ import Posts from "../pages/Posts";
 import CreatePost from "../pages/CreatePost";
 import EditPost from "../pages/EditPost";
 import PostDetails from "../pages/PostDetails";
+import Profile from "../pages/Profile";
 
 export default function AppRoutes() {
   return (
@@ -68,6 +69,16 @@ export default function AppRoutes() {
     <ProtectedRoute>
       <Layout>
         <PostDetails />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/profile"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <Profile />
       </Layout>
     </ProtectedRoute>
   }

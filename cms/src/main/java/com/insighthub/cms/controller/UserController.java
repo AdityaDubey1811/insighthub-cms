@@ -19,4 +19,8 @@ public class UserController {
     public UserProfileResponse getProfile(@PathVariable Long userId){
         return userService.getProfile(userId);
     }
+    @GetMapping("/me")
+    public UserProfileResponse getMyProfile(Authentication authentication) {
+        return userService.getProfileByEmail(authentication.getName());
+    }
 }

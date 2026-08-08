@@ -3,4 +3,5 @@ import com.insighthub.cms.dto.UserProfileResponse;
 public interface UserService {
     void toggleFollow(Long userId,String currentUserEmail);
     UserProfileResponse getProfile(Long userId);
+    UserProfileResponse getProfileByEmail(String email);
 }

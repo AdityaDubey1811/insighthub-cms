@@ -50,4 +50,13 @@ public class UserServiceImpl implements UserService {
         response.setFollowing(followerRepository.countByFollowerId(userId));
         return response;
     }
+    @Override
+    public UserProfileResponse getProfileByEmail(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
+
+        return getProfile(user.getId());
+    }
 }
