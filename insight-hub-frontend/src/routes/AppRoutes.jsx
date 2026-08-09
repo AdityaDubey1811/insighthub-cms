@@ -9,6 +9,8 @@ import CreatePost from "../pages/CreatePost";
 import EditPost from "../pages/EditPost";
 import PostDetails from "../pages/PostDetails";
 import Profile from "../pages/Profile";
+import RoleBasedRoute from "./RoleBasedRoute";
+import Moderation from "../pages/admin/Moderation";
 
 export default function AppRoutes() {
   return (
@@ -80,6 +82,18 @@ export default function AppRoutes() {
       <Layout>
         <Profile />
       </Layout>
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/moderation"
+  element={
+    <ProtectedRoute>
+      <RoleBasedRoute allowedRoles={["ADMIN"]}>
+        <Layout>
+          <Moderation />
+        </Layout>
+      </RoleBasedRoute>
     </ProtectedRoute>
   }
 />

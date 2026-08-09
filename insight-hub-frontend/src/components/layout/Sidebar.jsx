@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const menuItems = [
   { name: "Dashboard", path: "/" },
@@ -9,6 +10,9 @@ const menuItems = [
 ];
 
 export default function Sidebar() {
+  const { user } = useAuth();
+
+  const isAdmin = user?.roles?.includes("ADMIN");
   return (
     <aside className="flex h-screen w-64 flex-col border-r border-gray-200 bg-white">
       <div className="border-b border-gray-200 p-6">
@@ -33,6 +37,20 @@ export default function Sidebar() {
             {item.name}
           </NavLink>
         ))}
+        {isAdmin && (
+       <NavLink
+      to="/admin/moderation"
+      className={({ isActive }) =>
+      `block rounded-lg px-4 py-3 text-sm font-medium transition ${
+        isActive
+          ? "bg-blue-50 text-blue-600"
+          : "text-gray-700 hover:bg-gray-100"
+      }`
+    }
+  >
+    Moderation
+  </NavLink>
+)}
       </nav>
     </aside>
   );

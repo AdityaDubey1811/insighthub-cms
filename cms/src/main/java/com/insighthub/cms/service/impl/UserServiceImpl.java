@@ -9,6 +9,8 @@ import com.insighthub.cms.service.UserService;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 import com.insighthub.cms.exception.BadRequestException;
+import com.insighthub.cms.entity.Role;
+import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -48,6 +50,12 @@ public class UserServiceImpl implements UserService {
         response.setEmail(user.getEmail());
         response.setFollowers(followerRepository.countByFollowingId(userId));
         response.setFollowing(followerRepository.countByFollowerId(userId));
+        response.setRoles(
+                user.getRoles()
+                        .stream()
+                        .map(Role::getName)
+                        .collect(Collectors.toSet())
+        );
         return response;
     }
     @Override
