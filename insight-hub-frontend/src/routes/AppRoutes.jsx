@@ -11,6 +11,7 @@ import PostDetails from "../pages/PostDetails";
 import Profile from "../pages/Profile";
 import RoleBasedRoute from "./RoleBasedRoute";
 import Moderation from "../pages/admin/Moderation";
+import Notifications from "../pages/Notifications";
 
 export default function AppRoutes() {
   return (
@@ -94,6 +95,16 @@ export default function AppRoutes() {
           <Moderation />
         </Layout>
       </RoleBasedRoute>
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/notifications"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <Notifications />
+      </Layout>
     </ProtectedRoute>
   }
 />
