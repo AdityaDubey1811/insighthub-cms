@@ -1,30 +1,12 @@
-import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 import toast from "react-hot-toast";
-import {
-  getMyNotifications,
-  markNotificationAsRead,
-} from "../services/notificationService";
+import { markNotificationAsRead } from "../services/notificationService";
+import { useAuth } from "../context/AuthContext";
 
 export default function Notifications() {
-  const [notifications, setNotifications] = useState([]);
+  const { notifications, setNotifications } = useAuth();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchNotifications() {
-      try {
-        const data = await getMyNotifications();
-        setNotifications(data);
-      } catch (error) {
-        console.error(error);
-        toast.error("Unable to load notifications");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchNotifications();
-  }, []);
 
   const handleMarkAsRead = async (notificationId) => {
     try {
