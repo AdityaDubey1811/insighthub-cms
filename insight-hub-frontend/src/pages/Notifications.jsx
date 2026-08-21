@@ -2,6 +2,8 @@ import { Bell } from "lucide-react";
 import toast from "react-hot-toast";
 import { markNotificationAsRead } from "../services/notificationService";
 import { useAuth } from "../context/AuthContext";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import EmptyState from "../components/ui/EmptyState";
 
 export default function Notifications() {
   const { notifications, setNotifications } = useAuth();
@@ -26,7 +28,7 @@ export default function Notifications() {
   };
 
   if (loading) {
-    return <p className="text-gray-600">Loading notifications...</p>;
+  return <LoadingSpinner text="Loading notifications..." />;
   }
 
   return (
@@ -41,17 +43,11 @@ export default function Notifications() {
 
       <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
         {notifications.length === 0 ? (
-          <div className="p-8 text-center">
-            <Bell size={28} className="mx-auto text-gray-400" />
-
-            <h3 className="mt-3 font-semibold text-gray-900">
-              No notifications
-            </h3>
-
-            <p className="mt-1 text-sm text-gray-500">
-              New activity will appear here.
-            </p>
-          </div>
+        <EmptyState
+        title="No notifications"
+        description="New activity will appear here."
+        icon={Bell}
+        />
         ) : (
           <div className="divide-y divide-gray-200">
             {notifications.map((notification) => (

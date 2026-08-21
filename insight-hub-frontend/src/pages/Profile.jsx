@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMyProfile } from "../services/userService";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -24,7 +25,7 @@ export default function Profile() {
   }, []);
 
   if (loading) {
-    return <p className="text-gray-600">Loading profile...</p>;
+  return <LoadingSpinner text="Loading profile..." />;
   }
 
   if (error) {

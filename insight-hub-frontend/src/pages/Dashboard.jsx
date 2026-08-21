@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMyPostsAnalytics } from "../services/analyticsService";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 export default function Dashboard() {
      const [analytics, setAnalytics] = useState([]);
@@ -23,11 +24,7 @@ export default function Dashboard() {
   }, []);
 
   if (loading) {
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
-      <p className="text-gray-600">Loading dashboard...</p>
-    </div>
-  );
+  return <LoadingSpinner text="Loading dashboard..." />;
 }
 
   if (error) {

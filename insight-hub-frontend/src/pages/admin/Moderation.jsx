@@ -4,6 +4,8 @@ import {
   getPendingPosts,
   moderatePost,
 } from "../../services/moderationService";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import EmptyState from "../../components/ui/EmptyState";
 
 export default function Moderation() {
   const [posts, setPosts] = useState([]);
@@ -45,7 +47,7 @@ export default function Moderation() {
   };
 
   if (loading) {
-    return <p className="text-gray-600">Loading moderation queue...</p>;
+  return <LoadingSpinner text="Loading moderation queue..." />;
   }
 
   return (
@@ -60,15 +62,11 @@ export default function Moderation() {
 
       <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
         {posts.length === 0 ? (
-          <div className="p-8 text-center">
-            <h3 className="font-semibold text-gray-900">
-              No pending posts
-            </h3>
-            <p className="mt-1 text-sm text-gray-500">
-              All submissions have been reviewed.
-            </p>
-          </div>
-        ) : (
+        <EmptyState
+        title="No pending posts"
+        description="All submissions have been reviewed."
+        />
+       ) : (
           <div className="divide-y divide-gray-200">
             {posts.map((post) => (
               <div

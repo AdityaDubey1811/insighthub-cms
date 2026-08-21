@@ -5,6 +5,8 @@ import { Plus } from "lucide-react";
 import { Pencil, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { deletePost } from "../services/postService";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import EmptyState from "../components/ui/EmptyState";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -52,7 +54,7 @@ export default function Posts() {
   }, []);
 
   if (loading) {
-    return <p className="text-gray-600">Loading posts...</p>;
+  return <LoadingSpinner text="Loading posts..." />;
   }
 
   if (error) {
@@ -83,13 +85,11 @@ export default function Posts() {
 
      <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
   {posts.length === 0 ? (
-    <div className="p-8 text-center">
-      <h3 className="text-lg font-semibold text-gray-900">No posts found</h3>
-      <p className="mt-2 text-sm text-gray-500">
-        Create your first post to start managing content.
-      </p>
-    </div>
-  ) : (
+  <EmptyState
+    title="No posts found"
+    description="Create your first post to start managing content."
+  />
+) : (
     <div className="overflow-x-auto">
       <table className="w-full text-left">
         <thead className="bg-gray-50 text-sm text-gray-600">

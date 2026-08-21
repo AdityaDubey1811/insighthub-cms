@@ -12,6 +12,8 @@ import {
   getPostVersions,
   restoreVersion,
 } from "../services/versionService";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import EmptyState from "../components/ui/EmptyState";
 
 export default function EditPost() {
   const { slug } = useParams();
@@ -121,7 +123,7 @@ const handleRestore = async (versionId) => {
 }, [quill]);
 
   if (loading) {
-    return <p className="text-gray-600">Loading post...</p>;
+  return <LoadingSpinner text="Loading post..." />;
   }
 
   if (error) {
@@ -188,13 +190,12 @@ const handleRestore = async (versionId) => {
   </div>
 
   {versionsLoading ? (
-    <p className="p-6 text-sm text-gray-500">
-      Loading versions...
-    </p>
+  <LoadingSpinner text="Loading versions..." />
   ) : versions.length === 0 ? (
-    <p className="p-6 text-sm text-gray-500">
-      No previous versions available.
-    </p>
+    <EmptyState
+  title="No previous versions"
+  description="Previous versions of this post will appear here."
+  />
   ) : (
     <div className="divide-y divide-gray-200">
       {versions.map((version) => (

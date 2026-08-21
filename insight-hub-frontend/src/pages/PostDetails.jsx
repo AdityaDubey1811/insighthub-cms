@@ -11,6 +11,7 @@ import { getComments } from "../services/commentService";
 import CommentItem from "../components/comment/CommentItem";
 import { useForm } from "react-hook-form";
 import { addComment } from "../services/commentService";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 export default function PostDetails() {
   const { slug } = useParams();
@@ -112,7 +113,7 @@ const handleReply = async (parentId, content) => {
 };
 
   if (loading) {
-    return <p className="text-gray-600">Loading post...</p>;
+  return <LoadingSpinner text="Loading post..." />;
   }
 
   if (error) {
