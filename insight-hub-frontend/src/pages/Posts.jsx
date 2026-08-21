@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 import { deletePost } from "../services/postService";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import EmptyState from "../components/ui/EmptyState";
+import StatusBadge from "../components/ui/StatusBadge";
+import ErrorState from "../components/ui/ErrorState";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -56,11 +58,9 @@ export default function Posts() {
   if (loading) {
   return <LoadingSpinner text="Loading posts..." />;
   }
-
-  if (error) {
-    return <p className="text-red-600">{error}</p>;
-  }
-
+if (error) {
+  return <ErrorState message={error} />;
+}  
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -114,7 +114,7 @@ export default function Posts() {
            </td>
 
               <td className="px-5 py-4 text-sm text-gray-600">
-                {post.status}
+                <StatusBadge status={post.status} />
               </td>
 
               <td className="px-5 py-4 text-sm text-gray-600">

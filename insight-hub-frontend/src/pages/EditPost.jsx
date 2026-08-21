@@ -14,6 +14,7 @@ import {
 } from "../services/versionService";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import EmptyState from "../components/ui/EmptyState";
+import ErrorState from "../components/ui/ErrorState";
 
 export default function EditPost() {
   const { slug } = useParams();
@@ -126,9 +127,9 @@ const handleRestore = async (versionId) => {
   return <LoadingSpinner text="Loading post..." />;
   }
 
-  if (error) {
-    return <p className="text-red-600">{error}</p>;
-  }
+ if (error) {
+  return <ErrorState message={error} />;
+}
 
   return (
     <div>

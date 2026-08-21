@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMyProfile } from "../services/userService";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import ErrorState from "../components/ui/ErrorState";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -29,8 +30,8 @@ export default function Profile() {
   }
 
   if (error) {
-    return <p className="text-red-600">{error}</p>;
-  }
+  return <ErrorState message={error} />;
+}
 
   return (
     <div>
