@@ -4,12 +4,19 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class JwtUtil {
-    private final String SECRET = "mySecretSuperKey181005RandomValue11xyz";
+    @Value("${jwt.secret}")
+    private String secret;
     private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15;
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private Key key;
+    @PostConstruct
+    public void init() {
+        key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generateToken(String email){
         return Jwts.builder()

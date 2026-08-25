@@ -6,6 +6,7 @@ import {
   disconnectNotifications,
 } from "../services/webSocketService";
 import toast from "react-hot-toast";
+import { getMyNotifications } from "../services/notificationService";
 
 const AuthContext = createContext();
 
@@ -59,6 +60,30 @@ export function AuthProvider({ children }) {
       disconnectNotifications();
     };
   }, [isAuthenticated, user]);
+  useEffect(() => {
+    console.log("NOTIFICATION EFFECT:", {
+    isAuthenticated,
+    user,
+  });
+  if (!isAuthenticated || !user) {
+    setNotifications([]);
+    return;
+  }
+
+  async function loadNotifications() {
+    try {
+        console.log("CALLING /notifications");
+      const data = await getMyNotifications();
+      console.log("NOTIFICATIONS RESPONSE:", data);
+
+      setNotifications(data);
+    } catch (error) {
+      console.error("Failed to load notifications:", error);
+    }
+  }
+
+  loadNotifications();
+}, [isAuthenticated, user]);
 
   const logout = () => {
     clearTokens();

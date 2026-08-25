@@ -12,6 +12,7 @@ import Profile from "../pages/Profile";
 import RoleBasedRoute from "./RoleBasedRoute";
 import Moderation from "../pages/admin/Moderation";
 import Notifications from "../pages/Notifications";
+import Register from "../pages/auth/Register";
 
 export default function AppRoutes() {
   return (
@@ -106,6 +107,14 @@ export default function AppRoutes() {
         <Notifications />
       </Layout>
     </ProtectedRoute>
+  }
+/>
+<Route
+  path="/register"
+  element={
+    <PublicRoute>
+      <Register />
+    </PublicRoute>
   }
 />
       </Routes>

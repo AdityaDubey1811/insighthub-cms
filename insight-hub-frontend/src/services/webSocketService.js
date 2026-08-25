@@ -18,9 +18,11 @@ export function connectNotifications(onNotification) {
     reconnectDelay: 5000,
 
     onConnect: () => {
+      console.log("WEBSOCKET CONNECTED");
       stompClient.subscribe(
         "/user/queue/notifications",
         (message) => {
+          console.log("WEBSOCKET NOTIFICATION:", message.body);
           const notification = JSON.parse(message.body);
           onNotification(notification);
         }

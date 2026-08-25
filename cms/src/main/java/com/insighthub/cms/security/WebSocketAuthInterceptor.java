@@ -8,6 +8,7 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 
 @Component
 public class WebSocketAuthInterceptor implements ChannelInterceptor {
@@ -26,7 +27,13 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         StompHeaderAccessor accessor =
-                StompHeaderAccessor.wrap(message);
+                MessageHeaderAccessor.getAccessor(
+                        message,
+                        StompHeaderAccessor.class
+                );
+        if (accessor == null) {
+            return message;
+        }
 
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
@@ -53,6 +60,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                             );
 
                     accessor.setUser(authentication);
+
                 }
             }
         }

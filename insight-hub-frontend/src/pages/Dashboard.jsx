@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { getMyPostsAnalytics } from "../services/analyticsService";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import EmptyState from "../components/ui/EmptyState";
+import ErrorState from "../components/ui/ErrorState";
 
 export default function Dashboard() {
      const [analytics, setAnalytics] = useState([]);
@@ -27,9 +29,9 @@ export default function Dashboard() {
   return <LoadingSpinner text="Loading dashboard..." />;
 }
 
-  if (error) {
-    return <p className="text-red-600">{error}</p>;
-  }
+ if (error) {
+  return <ErrorState message={error} />;
+}
    const totalPosts = analytics.length;
 
   const totalViews = analytics.reduce(
@@ -89,16 +91,11 @@ export default function Dashboard() {
   </div>
 
   {analytics.length === 0 ? (
-    <div className="p-8 text-center">
-  <h3 className="text-lg font-semibold text-gray-900">
-    No posts yet
-  </h3>
-
-  <p className="mt-2 text-sm text-gray-500">
-    Create your first post to start tracking analytics.
-  </p>
-</div>
-  ) : (
+  <EmptyState
+    title="No posts yet"
+    description="Create your first post to start tracking analytics."
+  />
+) : (
     <div className="overflow-x-auto">
       <table className="w-full text-left">
         <thead className="bg-gray-50 text-sm text-gray-600">

@@ -2,6 +2,8 @@ package com.insighthub.cms.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
 @Entity
 @Table(name = "posts")
 @Getter
@@ -34,4 +36,16 @@ public class Post {
 
     @Column(nullable = false)
     private Long views = 0L;
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private java.util.List<PostLike> likes = new java.util.ArrayList<>();
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<PostVersion> versions = new ArrayList<>();
 }

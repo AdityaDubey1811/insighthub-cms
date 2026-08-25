@@ -2,12 +2,10 @@ import { Bell } from "lucide-react";
 import toast from "react-hot-toast";
 import { markNotificationAsRead } from "../services/notificationService";
 import { useAuth } from "../context/AuthContext";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
 import EmptyState from "../components/ui/EmptyState";
 
 export default function Notifications() {
   const { notifications, setNotifications } = useAuth();
-  const [loading, setLoading] = useState(true);
 
 
   const handleMarkAsRead = async (notificationId) => {
@@ -26,10 +24,6 @@ export default function Notifications() {
       toast.error("Unable to update notification");
     }
   };
-
-  if (loading) {
-  return <LoadingSpinner text="Loading notifications..." />;
-  }
 
   return (
     <div>
