@@ -16,8 +16,14 @@ public class UserController {
         userService.toggleFollow(userId, authentication.getName());
     }
     @GetMapping("/{userId}")
-    public UserProfileResponse getProfile(@PathVariable Long userId){
-        return userService.getProfile(userId);
+    public UserProfileResponse getProfile(
+            @PathVariable Long userId,
+            Authentication authentication) {
+
+        return userService.getProfile(
+                userId,
+                authentication.getName()
+        );
     }
     @GetMapping("/me")
     public UserProfileResponse getMyProfile(Authentication authentication) {

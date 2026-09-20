@@ -9,4 +9,5 @@ public class UserProfileResponse {
     private Long followers;
     private long following;
     private Set<String> roles;
+    private boolean followedByCurrentUser;
 }

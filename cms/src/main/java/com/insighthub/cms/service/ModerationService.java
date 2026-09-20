@@ -5,4 +5,5 @@ import java.util.List;
 public interface ModerationService {
     List<PostResponse> getPendingPosts();
     PostResponse moderatePost(Long postId,PostModerationRequest request);
+    PostResponse submitForModeration(Long postId, String userEmail);
 }

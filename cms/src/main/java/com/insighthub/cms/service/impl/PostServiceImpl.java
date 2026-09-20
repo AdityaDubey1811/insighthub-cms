@@ -15,20 +15,33 @@ import com.insighthub.cms.entity.PostVersion;
 import com.insighthub.cms.repository.PostVersionRepository;
 import com.insighthub.cms.exception.ResourceNotFoundException;
 import com.insighthub.cms.exception.ForbiddenException;
+import com.insighthub.cms.entity.Category;
+import com.insighthub.cms.entity.Tag;
+import com.insighthub.cms.repository.CategoryRepository;
+import com.insighthub.cms.repository.TagRepository;
+import java.util.Set;
+
+import java.util.HashSet;
 @Service
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
     private final PostVersionRepository postVersionRepository;
+    private final CategoryRepository categoryRepository;
+    private final TagRepository tagRepository;
     public PostServiceImpl(PostRepository postRepository,
                            UserRepository userRepository,
                            PostMapper postMapper,
-                           PostVersionRepository postVersionRepository){
+                           PostVersionRepository postVersionRepository,
+                           CategoryRepository categoryRepository,
+                           TagRepository tagRepository){
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.postMapper = postMapper;
         this.postVersionRepository = postVersionRepository;
+        this.categoryRepository = categoryRepository;
+        this.tagRepository = tagRepository;
     }
     @Override
     public PostResponse createPost(PostRequest request,String authorEmail){
@@ -39,6 +52,19 @@ public class PostServiceImpl implements PostService{
         post.setContent(request.getContent());
         post.setSlug(generateSlug(request.getTitle()));
         post.setStatus(PostStatus.PENDING);
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+            post.setCategory(category);
+        }
+
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(request.getTagIds()));
+            if (tags.size() != request.getTagIds().size()) {
+                throw new ResourceNotFoundException("One or more tags not found");
+            }
+            post.setTags(tags);
+        }
         post.setAuthor(author);
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
@@ -84,6 +110,23 @@ public class PostServiceImpl implements PostService{
         version.setContent(post.getContent());
         version.setEditedAt(LocalDateTime.now());
         postVersionRepository.save(version);
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+            post.setCategory(category);
+        } else {
+            post.setCategory(null);
+        }
+
+        if (request.getTagIds() != null) {
+            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(request.getTagIds()));
+            if (tags.size() != request.getTagIds().size()) {
+                throw new ResourceNotFoundException("One or more tags not found");
+            }
+            post.setTags(tags);
+        } else {
+            post.setTags(new HashSet<>());
+        }
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setUpdatedAt(LocalDateTime.now());

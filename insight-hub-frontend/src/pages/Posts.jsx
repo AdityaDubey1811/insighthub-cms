@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllPosts } from "../services/postService";
+import { getAllPosts, submitForModeration } from "../services/postService";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Pencil, Trash2 } from "lucide-react";
@@ -38,7 +38,24 @@ export default function Posts() {
   }
 
 };
+const handleSubmitForModeration = async (postId) => {
+  try {
+    const updatedPost = await submitForModeration(postId);
 
+    setPosts((currentPosts) =>
+      currentPosts.map((post) =>
+        post.id === postId ? updatedPost : post
+      )
+    );
+
+    toast.success("Post submitted for moderation");
+  } catch (error) {
+    console.error(error);
+    toast.error(
+      error.response?.data?.message || "Unable to submit post for moderation"
+    );
+  }
+};
   useEffect(() => {
     async function fetchPosts() {
       try {

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import com.insighthub.cms.mapper.PostMapper;
 import com.insighthub.cms.exception.ResourceNotFoundException;
+import com.insighthub.cms.exception.ForbiddenException;
 @Service
 public class ModerationServiceImpl implements ModerationService {
     private final PostRepository postRepository;
@@ -42,6 +43,19 @@ public class ModerationServiceImpl implements ModerationService {
                     "Your post has been approved"
             );
         }
+        return postMapper.mapToResponse(updated);
+    }
+    @Override
+    public PostResponse submitForModeration(Long postId, String userEmail) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        if (!post.getAuthor().getEmail().equals(userEmail)) {
+            throw new ForbiddenException("You are not allowed to perform this action");
+        }
+
+        post.setStatus(PostStatus.PENDING);
+        Post updated = postRepository.save(post);
         return postMapper.mapToResponse(updated);
     }
 }

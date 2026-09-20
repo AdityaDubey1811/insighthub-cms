@@ -6,12 +6,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.insighthub.cms.service.ModerationService;
 @RestController
 @RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
-    public PostController(PostService postService){
+    private final ModerationService moderationService;
+    public PostController(PostService postService,ModerationService moderationService){
         this.postService = postService;
+        this.moderationService = moderationService;
     }
     @PostMapping
     @PreAuthorize("hasRole('AUTHOR')")
@@ -42,5 +45,15 @@ public class PostController {
     public void deletePost(@PathVariable Long id,
                            Authentication authentication){
         postService.deletePost(id, authentication.getName());
+    }
+    @PostMapping("/{id}/submit")
+    @PreAuthorize("hasRole('AUTHOR')")
+    public PostResponse submitForModeration(
+            @PathVariable Long id,
+            Authentication authentication) {
+        return moderationService.submitForModeration(
+                id,
+                authentication.getName()
+        );
     }
 }

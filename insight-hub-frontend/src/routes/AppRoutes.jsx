@@ -117,6 +117,16 @@ export default function AppRoutes() {
     </PublicRoute>
   }
 />
+<Route
+  path="/users/:userId"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <Profile />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
       </Routes>
     </BrowserRouter>
   );

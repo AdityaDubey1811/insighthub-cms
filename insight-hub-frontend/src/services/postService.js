@@ -23,3 +23,7 @@ export async function updatePost(postId, postData) {
 export async function deletePost(postId) {
   await api.delete(`/posts/${postId}`);
 }
+export async function submitForModeration(postId) {
+  const response = await api.post(`/posts/${postId}/submit`);
+  return response.data;
+}

@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         followerRepository.save(follower);
     }
     @Override
-    public UserProfileResponse getProfile(Long userId){
+    public UserProfileResponse getProfile(Long userId, String currentUserEmail) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         UserProfileResponse response = new UserProfileResponse();
@@ -56,6 +56,14 @@ public class UserServiceImpl implements UserService {
                         .map(Role::getName)
                         .collect(Collectors.toSet())
         );
+        User currentUser = userRepository.findByEmail(currentUserEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Current user not found"));
+
+        boolean isFollowing = followerRepository
+                .findByFollowerIdAndFollowingId(currentUser.getId(), userId)
+                .isPresent();
+
+        response.setFollowedByCurrentUser(isFollowing);
         return response;
     }
     @Override
@@ -65,6 +73,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User not found"));
 
-        return getProfile(user.getId());
+        return getProfile(user.getId(), email);
     }
 }
