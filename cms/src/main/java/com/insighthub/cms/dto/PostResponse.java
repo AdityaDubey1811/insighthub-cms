@@ -14,6 +14,7 @@ public class PostResponse {
     private String slug;
     private String status;
     private String authorName;
+    private Long authorId;
     private LocalDateTime createdAt;
 
     private Long categoryId;

@@ -18,6 +18,7 @@ public class PostMapper {
         response.setSlug(post.getSlug());
         response.setStatus(post.getStatus().name());
         response.setAuthorName(post.getAuthor().getName());
+        response.setAuthorId(post.getAuthor().getId());
         response.setCreatedAt(post.getCreatedAt());
 
         if (post.getCategory() != null) {

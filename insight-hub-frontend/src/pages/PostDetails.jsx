@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { getPostBySlug } from "../services/postService";
 import { Heart } from "lucide-react";
 import toast from "react-hot-toast";
@@ -23,7 +23,7 @@ export default function PostDetails() {
   const [error, setError] = useState("");
   const [likeCount, setLikeCount] = useState(0);
   const [likeLoading, setLikeLoading] = useState(false);
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState([]); 
   const [commentsLoading, setCommentsLoading] = useState(true);
 
   const {
@@ -135,7 +135,12 @@ export default function PostDetails() {
       </h1>
 
       <div className="mt-3 flex items-center gap-3 text-sm text-gray-500">
-        <span>{post.authorName}</span>
+        <Link
+  to={`/users/${post.authorId}`}
+  className="font-medium text-blue-600 hover:underline"
+>
+  {post.authorName}
+</Link>
         <span>•</span>
         <span>{post.status}</span>
       </div>
