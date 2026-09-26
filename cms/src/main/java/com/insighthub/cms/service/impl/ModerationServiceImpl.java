@@ -36,11 +36,17 @@ public class ModerationServiceImpl implements ModerationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         post.setStatus(PostStatus.valueOf(request.getStatus()));
         Post updated = postRepository.save(post);
-        if(post.getStatus() ==  PostStatus.APPROVED){
+        if (post.getStatus() == PostStatus.APPROVED) {
             notificationService.sendNotification(
                     post.getAuthor().getId(),
                     NotificationType.APPROVAL,
                     "Your post has been approved"
+            );
+        } else if (post.getStatus() == PostStatus.REJECTED) {
+            notificationService.sendNotification(
+                    post.getAuthor().getId(),
+                    NotificationType.REJECTION,
+                    "Your post has been rejected"
             );
         }
         return postMapper.mapToResponse(updated);
