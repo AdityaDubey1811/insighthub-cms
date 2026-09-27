@@ -42,13 +42,8 @@ public class ModerationServiceImpl implements ModerationService {
                     NotificationType.APPROVAL,
                     "Your post has been approved"
             );
-        } else if (post.getStatus() == PostStatus.REJECTED) {
-            notificationService.sendNotification(
-                    post.getAuthor().getId(),
-                    NotificationType.REJECTION,
-                    "Your post has been rejected"
-            );
         }
+
         return postMapper.mapToResponse(updated);
     }
     @Override
